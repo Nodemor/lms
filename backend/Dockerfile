@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn -q -B package
 
 # ---------- run
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* \
     && useradd --system --uid 1001 app && mkdir -p /data/uploads && chown -R app /data
 WORKDIR /app
