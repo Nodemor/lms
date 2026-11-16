@@ -1,0 +1,103 @@
+# Production stack (used by Jenkins on the VPS).
+#   docker compose -p nodemore -f docker-compose.prod.yml --env-file /opt/nodemore/.env up -d --build
+# HTTPS and the public domain are handled by Caddy in deploy/infra (shared "web" network).
+name: nodemore
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nodemore-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nodemore_lms
+      POSTGRES_USER: ${DB_USER:-nodemore}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-nodemore} -d nodemore_lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    mem_limit: 1g
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    container_name: nodemore-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    mem_limit: 256m
+    networks: [internal]
+
+  backend:
+    build: ./backend
+    image: nodemore-backend:latest
+    container_name: nodemore-backend
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      JAVA_OPTS: "-XX:MaxRAMPercentage=70 -XX:+UseG1GC"
+      DB_URL: jdbc:postgresql://postgres:5432/nodemore_lms
+      DB_USER: ${DB_USER:-nodemore}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      COOKIE_SECURE: "true"
+      FRONTEND_URL: ${PUBLIC_URL:?set PUBLIC_URL}
+      BACKEND_PUBLIC_URL: ${PUBLIC_URL}
+      CORS_ALLOWED_ORIGINS: ${PUBLIC_URL}
+      APP_TIMEZONE: Asia/Colombo
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      STORAGE_SIGNING_SECRET: ${STORAGE_SIGNING_SECRET:?set STORAGE_SIGNING_SECRET}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      LIVEKIT_URL: ${LIVEKIT_PUBLIC_URL:-}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:-}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:-}
+      MAIL_ENABLED: "true"
+      SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_AUTH: "true"
+      SMTP_STARTTLS: "true"
+      MAIL_FROM: ${MAIL_FROM:?set MAIL_FROM}
+      MAIL_REPLY_TO: ${MAIL_REPLY_TO:-nodemoracademy@gmail.com}
+      MAIL_CLASS_UPDATES: ${MAIL_CLASS_UPDATES:-false}
+      API_DOCS_ENABLED: "false"
+    volumes:
+      - uploads:/data/uploads
+    mem_limit: 1536m
+    networks: [internal]
+
+  frontend:
+    build: ./frontend
+    image: nodemore-frontend:latest
+    container_name: nodemore-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    mem_limit: 256m
+    networks: [internal, web]
+
+networks:
+  internal: {}
+  web:
+    external: true
+    name: web
+
+volumes:
+  pgdata:
+  uploads:

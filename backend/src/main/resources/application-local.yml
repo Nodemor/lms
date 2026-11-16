@@ -1,0 +1,47 @@
+# ---------------------------------------------------------------------------
+# LOCAL TESTING PROFILE (no Docker). Activate with: -Dspring-boot.run.profiles=local
+# Needs only PostgreSQL. Redis, email server and LiveKit are optional here.
+# NEVER use this profile on a real server: the secrets below are public.
+# ---------------------------------------------------------------------------
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/nodemore_lms}
+    username: ${DB_USER:nodemore}
+    password: ${DB_PASSWORD:nodemore}
+
+management:
+  health:
+    redis:
+      enabled: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  frontend-url: http://localhost:5173
+  backend-url: http://localhost:8080
+  cors-allowed-origins: http://localhost:5173
+  jwt:
+    # Fixed dev-only secret so logins survive restarts. Production uses JWT_SECRET.
+    secret: ${JWT_SECRET:bG9jYWwtZGV2LW9ubHktbm9kZW1vcmUtand0LXNlY3JldC1kby1ub3QtdXNlLWluLXByb2R1Y3Rpb24=}
+  storage:
+    provider: local
+    local-dir: ${STORAGE_LOCAL_DIR:./data/uploads}
+    signing-secret: local-dev-only-signing-secret
+  livekit:
+    # Empty by default: live classes use Zoom / Google Meet / Teams links.
+    # Set LIVEKIT_API_KEY and LIVEKIT_API_SECRET only if you also run a LiveKit server.
+    url: ${LIVEKIT_URL:ws://localhost:7880}
+    api-key: ${LIVEKIT_API_KEY:}
+    api-secret: ${LIVEKIT_API_SECRET:}
+  mail:
+    # No email server needed: e-mails (including verification codes) are printed in this console.
+    enabled: ${MAIL_ENABLED:false}
+  admin:
+    email: ${ADMIN_EMAIL:admin@nodemore.local}
+    password: ${ADMIN_PASSWORD:Admin@12345}
+  rate-limit:
+    enabled: false

@@ -1,0 +1,18 @@
+# Caddy gets and renews free Let's Encrypt certificates automatically.
+# DNS A records for both names must point to this VPS before starting Caddy.
+{
+	email admin@nodemor.io
+}
+
+academy.nodemor.io {
+	encode zstd gzip
+	reverse_proxy nodemore-frontend:80
+}
+
+ci.nodemor.io {
+	encode zstd gzip
+	# Optional: allow Jenkins only from your office/home IP (and GitHub webhooks):
+	# @blocked not remote_ip 203.0.113.10/32 140.82.112.0/20 192.30.252.0/22 185.199.108.0/22 143.55.64.0/20
+	# respond @blocked 403
+	reverse_proxy jenkins:8080
+}

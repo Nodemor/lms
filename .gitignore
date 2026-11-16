@@ -1,0 +1,21 @@
+# secrets: never commit real environment files
+.env
+.env.*
+!.env.example
+!*.example
+*.pem
+*.key
+
+# build output / dependencies
+**/node_modules
+**/dist
+**/target
+**/data
+*.log
+
+# editors / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

@@ -1,0 +1,44 @@
+# One-time infrastructure on the VPS: Caddy (automatic HTTPS) + Jenkins (CI/CD).
+#   cd /opt/nodemore/repo/deploy/infra && DOCKER_GID=$(getent group docker | cut -d: -f3) docker compose up -d --build
+name: nodemore-infra
+
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [web]
+
+  jenkins:
+    build: ./jenkins
+    image: nodemore-jenkins:latest
+    container_name: jenkins
+    restart: unless-stopped
+    # Jenkins talks to the host Docker engine to build and deploy the app.
+    group_add:
+      - "${DOCKER_GID:?run with DOCKER_GID=$(getent group docker | cut -d: -f3)}"
+    environment:
+      JAVA_OPTS: "-Xmx768m -Djenkins.install.runSetupWizard=true"
+    volumes:
+      # Same path on host and in the container, so Docker bind paths resolve correctly.
+      - /var/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/nodemore/.env:/opt/nodemore/.env:ro
+    mem_limit: 1g
+    networks: [web]
+
+networks:
+  web:
+    name: web
+
+volumes:
+  caddy_data:
+  caddy_config:
