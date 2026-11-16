@@ -42,7 +42,7 @@
     <dependency><groupId>io.jsonwebtoken</groupId><artifactId>jjwt-jackson</artifactId><version>${jjwt.version}</version><scope>runtime</scope></dependency>
 
     <!-- Argon2id password hashing (used by Spring Security's Argon2PasswordEncoder) -->
-    <dependency><groupId>org.bouncycastle</groupId><artifactId>bcprov-jdk18on</artifactId><version>1.78.1</version></dependency>
+    <dependency><groupId>org.bouncycastle</groupId><artifactId>bcprov-jdk18on</artifactId><version>1.87</version></dependency>
 
     <!-- Cloudflare R2 / S3 compatible storage -->
     <dependency><groupId>software.amazon.awssdk</groupId><artifactId>s3</artifactId><version>${awssdk.version}</version></dependency>
