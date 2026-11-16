@@ -1,5 +1,5 @@
 # Jenkins LTS with the Docker CLI + Compose plugin (it uses the host's Docker engine).
-FROM jenkins/jenkins:lts-jdk17
+FROM jenkins/jenkins:lts-jdk21
 USER root
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
