@@ -27,8 +27,8 @@ importers:
         specifier: 1.1.6
         version: 1.1.6
       '@tanstack/react-query':
-        specifier: 5.59.20
-        version: 5.59.20(react@18.3.1)
+        specifier: 5.107.1
+        version: 5.107.1(react@18.3.1)
       axios:
         specifier: 1.9.0
         version: 1.9.0
@@ -526,13 +526,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@tanstack/query-core@5.59.20':
-    resolution: {integrity: sha512-e8vw0lf7KwfGe1if4uPFhvZRWULqHjFcz3K8AebtieXvnMOz5FSzlZe3mTLlPuUBcydCnBRqYs2YJ5ys68wwLg==}
+  '@tanstack/query-core@5.107.1':
+    resolution: {integrity: sha512-PSyAik11oQBEVOiVy5hjZWHmoUqOXqK1WYy4v55mcxozEfKaQgpUMsgnXhWjuESzSht8JfzqMS1m6M/9CpNgvg==}
 
-  '@tanstack/react-query@5.59.20':
-    resolution: {integrity: sha512-Zly0egsK0tFdfSbh5/mapSa+Zfc3Et0Zkar7Wo5sQkFzWyB3p3uZWOHR2wrlAEEV2L953eLuDBtbgFvMYiLvUw==}
+  '@tanstack/react-query@5.107.1':
+    resolution: {integrity: sha512-udCOOLp3ZAheUrIHLCe+ZZge6nr2ZUrGMSWcCuXsjY1Bf2JeeE09oxst97PILiCY6N8xo/7bIo3Hvz13zh06FA==}
     peerDependencies:
+      '@types/react': ^18 || ^19
       react: ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -1616,11 +1620,11 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.68.2':
     optional: true
 
-  '@tanstack/query-core@5.59.20': {}
+  '@tanstack/query-core@5.107.1': {}
 
-  '@tanstack/react-query@5.59.20(react@18.3.1)':
+  '@tanstack/react-query@5.107.1(react@18.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.59.20
+      '@tanstack/query-core': 5.107.1
       react: 18.3.1
 
   '@types/babel__core@7.20.5':
